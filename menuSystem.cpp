@@ -2,6 +2,7 @@
 #include "menuSystem.h"
 #include "constants.h"
 #include "stringFunctions.h"
+#include "movies.h"
 
 const char* getMenuArray(bool isAdmin, int index);
 void handleOption(const char* option, bool& isAdmin);
@@ -9,21 +10,21 @@ void handleOption(const char* option, bool& isAdmin);
 void handleOption(const char* option, bool& isAdmin) {
   if(option == nullptr) return;
   if(areEqualStr(option, "Add a movie")) {
-
+    addMovie();
   } else if(areEqualStr(option, "Search for a movie")) {
-
-  } else if(areEqualStr(option, "Preview all movies")) {
-    
+    searchMovie();
+  } else if(areEqualStr(option, "View all movies")) {
+    viewMovies();
   } else if(areEqualStr(option, "Edit a movie")) {
-    
+    editMovie();
   } else if(areEqualStr(option, "Delete a movie")) {
-    
+    deleteMovie();
   } else if(areEqualStr(option, "Sort movies")) {
-    
+    sortMovie();
   } else if(areEqualStr(option, "Rate a movie")) {
-    
+    rateMovie();
   } else if(areEqualStr(option, "Filter movies by rating")) {
-    
+    filterByRating();
   } else if(areEqualStr(option, "Log out")) {
     signIn(isAdmin);
     showMenu(isAdmin);
