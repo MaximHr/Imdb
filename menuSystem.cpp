@@ -28,7 +28,10 @@ void handleOption(const char* option, bool& isAdmin) {
   } else if(areEqualStr(option, "Log out")) {
     signIn(isAdmin);
     showMenu(isAdmin);
+  } else {
+    std::cout << "Invalid option" << std::endl;
   }
+  showMenu(isAdmin);
 }
 
 const char* getMenuArray(bool isAdmin, int index) {
@@ -48,15 +51,11 @@ void showMenu(bool& isAdmin) {
   handleOption(option, isAdmin);
 }
 
+
 void signIn(bool& isAdmin) {
   std::cout << "Welcom to IMDB !" << std::endl;
-  std::cout << "Enter the number in front of the option you want" << std::endl;
   std::cout << "1. Log in as user" << std::endl;
   std::cout << "2. Log in as admin" << std::endl;
-  int userInput;
-  do {
-    std::cin >> userInput;
-    // user can type either 1 - to access normal user options or 2 - to access admin options
-  } while(userInput > 2 || userInput < 1); 
-  isAdmin = (userInput - 1);
+  char options[] = {'1', '2'};
+  isAdmin = choseOption(options) - 1;
 }

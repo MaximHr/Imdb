@@ -1,11 +1,9 @@
 #pragma once
 
-//movies
-
-
 //files
 constexpr char DATABASE[] = "database.txt";
 constexpr char SEPARATING_CHAR = '|';
+constexpr unsigned LINE_MAX_CHARACTERS = 100;
 
 //menu
 constexpr unsigned MENU_MAX_CHARACTERS = 50; //max characters for each menu option
