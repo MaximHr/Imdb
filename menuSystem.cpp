@@ -1,7 +1,7 @@
 #include <iostream>
 #include "menuSystem.h"
 #include "constants.h"
-#include "stringFunctions.h"
+#include "helperFunctions.h"
 #include "movies.h"
 
 const char* getMenuArray(bool isAdmin, int index);
@@ -39,8 +39,7 @@ void showMenu(bool& isAdmin) {
   const unsigned length = (isAdmin ? ADMIN_OPTIONS_LENGTH : USER_OPTIONS_LENGTH);
   unsigned choice;
   for(int i = 0;i < length;i++) {
-    const char *arr = getMenuArray(isAdmin, i);
-    std::cout << i + 1 << ". " << arr<< '\n';
+    std::cout << i + 1 << ". " << getMenuArray(isAdmin, i) << '\n';
   }
   do {
     std::cin >> choice;

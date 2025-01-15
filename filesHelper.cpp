@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include "filesHelper.h"
 #include "constants.h"
 
 void addNewLineToFile(const char* filename, const char* content) {
