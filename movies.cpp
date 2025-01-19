@@ -8,6 +8,9 @@
 void searchByTitle(std::ifstream &file , char* line);
 void searchByGenre(std::ifstream &file , char* line);
 void searchByAnyCriteria(std::ifstream &file , char* line);
+void getLineByTitleAndEdit(std::ifstream &file , char* line);
+void getLineByTitleAndDelete(std::ifstream &file , char* line);
+char* findMovieDetail(const char* str, char symbol, int n);
 
 char* getStrInput(const char* printText) {
   char temp[1024];
@@ -30,7 +33,7 @@ char* getStrInput(const char* printText) {
   return string;
 }
 
-char* createLine(const char* title, const char* genre, const char* releaseDate, float rating, const char* director){
+char* createLine(const char* title, const char* genre, const char* releaseDate, const char* rating, const char* director){
   if(title == nullptr || genre == nullptr || director == nullptr) return nullptr;
   const unsigned titleLength = strLength(title), genreLength = strLength(genre);
   const unsigned releaseDateLength = strLength(releaseDate), directorLength = strLength(director);
@@ -44,46 +47,55 @@ char* createLine(const char* title, const char* genre, const char* releaseDate, 
   strConcat(result, SEPARATING_CHAR);
   strConcat(result, releaseDate);
   strConcat(result, SEPARATING_CHAR);
-  strConcat(result, "5.0");
+  strConcat(result, rating);
   strConcat(result, SEPARATING_CHAR);
   strConcat(result, director);
 
   return result;
 }
 
-void addMovie() {
-  clearInputBuffer();
-  const char* title = getStrInput("Title: ");
-  const char* genre = getStrInput("Genre: ");
-  
+char* getReleaseDate() {
   char* releaseDate = nullptr;
   unsigned short releaseDateNumber = 0;
   do {
     if(releaseDate != nullptr) {
       delete[] releaseDate;
     }
+
     releaseDate = getStrInput("Release Date: ");
     releaseDateNumber = getNumber(releaseDate);
   } while(releaseDateNumber < 1800 || releaseDateNumber > 9999);
 
+  return releaseDate;
+}
+
+void addMovie() {
+  clearInputBuffer();
+  const char* title = getStrInput("Title: ");
+  const char* genre = getStrInput("Genre: ");
+  const char* releaseDate = getReleaseDate();
   const char* director = getStrInput("Director: ");
-  
-  char* line = createLine(title, genre, releaseDate, 5, director);
+  char* line = createLine(title, genre, releaseDate, "5.0", director);
+
   if(line != nullptr) {
     addNewLineToFile(DATABASE, line);
     std::cout << "Movie added succesfully";
-  } 
+  } else {
+    std::cout << "Failed to add movie. Please try again.";
+  }
+  delete[] line;
   delete[] title;
   delete[] genre;
   delete[] director;
   delete[] releaseDate;
+
 }
 
 void searchMovie() {
   std::cout << "Type 1 to search by genre" << '\n';
   std::cout << "Type 2 to search by title" << '\n';
   std::cout << "Type 3 to search by any criteria" << '\n';
-  int choice = choseOption("123"); // same as { '1', '2', '3' }
+  int choice = chooseOption("123"); // same as { '1', '2', '3' }
 
   switch(choice) {
     case 1:
@@ -98,23 +110,56 @@ void searchMovie() {
   }
 }
 void editMovie() {
-
+  readFromFile(DATABASE, &getLineByTitleAndEdit);
 }
 void deleteMovie() {
-
+  readFromFile(DATABASE, &getLineByTitleAndDelete);
 }
 void sortMovie() {
-
+  std::cout << "Type 1 to sort movies by title" << '\n';
+  std::cout << "Type 2 to sort movies by rating" << '\n';
+  int choice = chooseOption("12"); // same as { '1', '2' }
+  if(choice == 1) {
+    //sort by title
+  } else {
+    //sort by rating
+  }
 }
 void rateMovie() {
 
 }
-void filterByRating() {
+void printFilteredMovies(std::ifstream &file , char* line) {
+  clearInputBuffer();
 
+  const char* rating = nullptr;
+  float ratingNumber = 0;
+  do {
+    if(rating != nullptr) {
+      delete[] rating;
+    }
+    rating = getStrInput("Enter rating: ");
+    ratingNumber = getFloatNumber(rating);
+  } while(!isBetween(ratingNumber, 0, MAXIMUM_RATING));
+  
+  std::cout << "Movies with rating greater or equal to " << ratingNumber << '\n'; 
+  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+    char* movieRating = findMovieDetail(line, SEPARATING_CHAR, 3);
+    float movieRatingNumber = getFloatNumber(movieRating);
+    if(movieRatingNumber >= ratingNumber) {
+      std::cout << line << std::endl;
+    }
+    delete[] movieRating;
+  }
+
+  delete[] rating;
+}
+void filterByRating() {
+  readFromFile(DATABASE, &printFilteredMovies);
 }
 
-//finds string between the n-th symbol and n-th + 1 separating symbol
-char* findMovieDetail(char* str, char symbol, int n) {
+//finds string between the n-th 1symbol and n-th + 1 separating symbol
+char* findMovieDetail(const char* str, char symbol, int n) {
+  if(str == nullptr) return nullptr;
   int count = 0;
   while(*str != '\0') {
     if(*str == symbol) {
@@ -163,6 +208,49 @@ void searchByTitle(std::ifstream &file , char* line) {
   }
   delete[] title;
 }
+
+void getLineByTitleAndDelete(std::ifstream &file , char* line) {
+  clearInputBuffer();
+  char* title = getStrInput("Enter title: ");
+  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+    char* movieTitle = findMovieDetail(line, SEPARATING_CHAR, 0);
+    if(movieTitle != nullptr && areEqualStr(movieTitle, title)) {
+      std::cout << line << std::endl;
+      deleteLineFromFile(DATABASE, line);
+    }
+    delete[] movieTitle;
+  }
+  delete[] title;
+}
+void getLineByTitleAndEdit(std::ifstream &file , char* line) {
+  clearInputBuffer();
+  char* title = getStrInput("Enter title: ");
+  
+  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+    char* movieTitle = findMovieDetail(line, SEPARATING_CHAR, 0);
+    if(movieTitle != nullptr && areEqualStr(movieTitle, title)) {
+      std::cout << line << std::endl;
+      const char* title = getStrInput("New title: ");
+      const char* genre = getStrInput("New genre: ");
+      const char* releaseDate = getReleaseDate();
+      const char* director = getStrInput("New director: ");
+      const char* rating = findMovieDetail(line, SEPARATING_CHAR, 3);
+      char* newLine = createLine(title, genre, releaseDate, rating, director);
+      editLineInFile(DATABASE, line, newLine);
+      delete[] newLine;
+      delete[] title;
+      delete[] genre;
+      delete[] rating;
+      delete[] director;
+      delete[] releaseDate;
+
+    }
+    delete[] movieTitle;
+  }
+  delete[] title;
+  
+}
+
 void searchByGenre(std::ifstream &file , char* line) {
   clearInputBuffer();
   char* genre = getStrInput("Enter genre: ");

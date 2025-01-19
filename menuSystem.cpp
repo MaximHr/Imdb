@@ -9,6 +9,8 @@ void handleOption(const char* option, bool& isAdmin);
 
 void handleOption(const char* option, bool& isAdmin) {
   if(option == nullptr) return;
+  short role = isAdmin;
+  
   if(areEqualStr(option, "Add a movie")) {
     addMovie();
   } else if(areEqualStr(option, "Search for a movie")) {
@@ -26,36 +28,39 @@ void handleOption(const char* option, bool& isAdmin) {
   } else if(areEqualStr(option, "Filter movies by rating")) {
     filterByRating();
   } else if(areEqualStr(option, "Log out")) {
-    signIn(isAdmin);
-    showMenu(isAdmin);
+    signIn(role);
+    showMenu(role);
   } else {
     std::cout << "Invalid option" << std::endl;
   }
-  showMenu(isAdmin);
+  if(role != 2) showMenu(isAdmin);
 }
 
 const char* getMenuArray(bool isAdmin, int index) {
   return (isAdmin ? ADMIN_MENU_OPTIONS[index] : USER_MENU_OPTIONS[index]);
 }
 
-void showMenu(bool& isAdmin) {
-  const unsigned length = (isAdmin ? ADMIN_OPTIONS_LENGTH : USER_OPTIONS_LENGTH);
+void showMenu(short role) {
+  if(role == 2) return;
+  const unsigned length = (role ? ADMIN_OPTIONS_LENGTH : USER_OPTIONS_LENGTH);
   unsigned choice;
   for(int i = 0;i < length;i++) {
-    std::cout << i + 1 << ". " << getMenuArray(isAdmin, i) << '\n';
+    std::cout << i + 1 << ". " << getMenuArray(role, i) << '\n';
   }
   do {
     std::cin >> choice;
   } while(choice > length || choice < 1);
-  const char* option = getMenuArray(isAdmin, choice - 1);
+  const char* option = getMenuArray(role, choice - 1);
+  bool isAdmin = role;
   handleOption(option, isAdmin);
 }
 
 
-void signIn(bool& isAdmin) {
+void signIn(short& role) {
   std::cout << "Welcom to IMDB !" << std::endl;
   std::cout << "1. Log in as user" << std::endl;
   std::cout << "2. Log in as admin" << std::endl;
-  char options[] = {'1', '2'};
-  isAdmin = choseOption(options) - 1;
+  std::cout << "3. Exit" << std::endl;
+  char options[] = {'1', '2', '3'};
+  role = chooseOption(options) - 1; //0 - user, 1 - admin
 }

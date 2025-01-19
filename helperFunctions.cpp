@@ -74,6 +74,45 @@ int toNumber(char letter) {
 }
 bool isNumber(char letter) { return (letter >= '0' && letter <= '9'); }
 
+int pow(int base, int power) {
+  int result = base;  
+  for(int i = 1; i < power; i++) {
+    result *= base;
+  }
+  return result;
+}
+
+float getFloatNumber(const char* str) {
+  if(!str) return -1;
+  float result = 0;
+  unsigned short dotPos = 0, i = 0;
+
+  while(*str != '\0') {
+    if(isNumber(*str)) {
+      result *= 10;
+      result += toNumber(*str);
+    } else if(*str == '.' && dotPos == 0) {
+      dotPos = i;
+    } else {
+      return -1;
+    }
+    i++;
+    str++;
+  }
+  if(dotPos != 0) {
+    result /= pow(10, i - dotPos - 1);
+  }
+  return result;
+}
+
+bool isBetween(float num, float min, float max) {
+  const float epsilon = 0.000001;
+  bool isBigger = (num + epsilon >= min);
+  bool isSmaller = (num - epsilon <= max);
+
+  return (isBigger && isSmaller);
+}
+
 unsigned getNumber(const char* str) {
   if(!str) return 0;
   int result = 0;
@@ -159,7 +198,7 @@ char* strConcat(char* dest, char src) {
 
   return dest;
 }
-int choseOption(const char* arr) {
+int chooseOption(const char* arr) {
   if(!arr) return -1;
   char userInput[2]; //If it is a single char (not an array of 1 char) it will cause bugs.
   do {

@@ -1,4 +1,4 @@
 #pragma once
 
-void signIn(bool& isAdmin);
-void showMenu(bool& isAdmin);
+void signIn(short& isAdmin);
+void showMenu(short isAdmin);
