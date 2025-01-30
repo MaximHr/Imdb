@@ -4,11 +4,19 @@
 #include "helperFunctions.h"
 #include "constants.h"
 
+bool fileExists(const std::string& filename) {
+    std::ifstream file(filename);
+    if (file.good()) {
+        file.close();
+        return true;
+    }
+    return false;
+}
 void addNewLineToFile(const char* filename, const char* content) {
   if(filename == nullptr || content == nullptr) return;
 
   std::ofstream file(filename, std::ios::app);
-  if (file.is_open()) {
+  if(file.is_open()) {
     file << content << std::endl;
   } else {
     std::cout << "Failed to connect to the database. Please try again." << std::endl;
@@ -35,7 +43,7 @@ void editLineInFile(const char* filename, const char* lineToEdit, const char* ne
 
   std::ifstream file(filename);
   if(file.is_open()) {
-    std::ofstream tempFile("temp.txt");
+    std::ofstream tempFile(TEMP_FILE);
     char line[LINE_MAX_CHARACTERS];
     while(file.getline(line, LINE_MAX_CHARACTERS)) {
       if(areEqualStr(line, lineToEdit)) {
@@ -46,8 +54,6 @@ void editLineInFile(const char* filename, const char* lineToEdit, const char* ne
     }
     file.close();
     tempFile.close();
-    std::remove(filename);
-    std::rename("temp.txt", DATABASE);
   } else {
     std::cout << "Failed to connect to the database. Please try again." << std::endl;
   }
@@ -58,7 +64,7 @@ void deleteLineFromFile(const char* filename, const char* lineToDelete) {
 
   std::ifstream file(filename);
   if(file.is_open()) {
-    std::ofstream tempFile("temp.txt");
+    std::ofstream tempFile(TEMP_FILE);
     char line[LINE_MAX_CHARACTERS];
     while(file.getline(line, LINE_MAX_CHARACTERS)) {
       if(!areEqualStr(line, lineToDelete)) {
@@ -67,9 +73,6 @@ void deleteLineFromFile(const char* filename, const char* lineToDelete) {
     }
     file.close();
     tempFile.close();
-    int res = std::remove(filename);
-    
-    std::rename("temp.txt", filename);
   } else {
     std::cout << "Failed to connect to the database. Please try again." << std::endl;
   }

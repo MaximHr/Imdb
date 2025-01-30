@@ -2,12 +2,14 @@
 #include <iostream>
 #include "helperFunctions.h"
 
+float roundNumber(float num){
+  return (int)(num * 100 + 0.5) / 100.0;
+}
 void clearInputBuffer() {
 	std::cin.clear();
 	std::cin.sync();
 	std::cin.ignore();	
 }
-
 char toLower(char letter) {
   if(letter >= 'A' && letter <= 'Z') {
     return letter + ('a' - 'A');
@@ -65,7 +67,6 @@ bool strContains(const char* str, char letter) {
   return false;
 }
 
-// char toChar(unsigned num) { return (num + '0'); }
 int toNumber(char letter) { 
   if(isNumber(letter)) {
     return (letter - '0');
@@ -81,6 +82,18 @@ int pow(int base, int power) {
   }
   return result;
 }
+const char* floatToString(float num) {
+  char* result = new char[5]; //max 3 digits + '.' + '\0'
+  int intPart = (int)num;
+  int decimalPart = (int)((num - intPart) * 100);
+  result[0] = intPart + '0';
+  result[1] = '.';
+  result[2] = decimalPart / 10 + '0';
+  result[3] = decimalPart % 10 + '0';  
+
+  return result;
+}
+
 
 float getFloatNumber(const char* str) {
   if(!str) return -1;
@@ -184,7 +197,6 @@ char* strConcat(char* dest, const char* src) {
   
   return dest;
 }
-
 char* strConcat(char* dest, char src) {
   if(!dest) return dest; 
 

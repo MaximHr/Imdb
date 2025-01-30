@@ -1,6 +1,7 @@
 #pragma once
 
-
+const char* floatToString(float num);
+float roundNumber(float num);
 float getFloatNumber(const char* str);
 bool isBetween(float num, float min, float max);
 int toNumber(char letter);

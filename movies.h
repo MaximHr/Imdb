@@ -1,10 +1,10 @@
 #pragma once
 
-void addMovie();
-void viewMovies();
-void searchMovie();
 void editMovie();
 void deleteMovie();
-void sortMovie();
 void rateMovie();
-void filterByRating();
+void addMovie();
+void searchMovie();
+void sortMovie();
+void printFilteredMovies(std::ifstream &file , char* line);
+void printAllMovies(std::ifstream &file , char* line);

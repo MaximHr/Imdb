@@ -3,20 +3,19 @@
 #include "constants.h"
 #include "helperFunctions.h"
 #include "movies.h"
+#include "filesHelper.h"
 
 const char* getMenuArray(bool isAdmin, int index);
-void handleOption(const char* option, bool& isAdmin);
 
-void handleOption(const char* option, bool& isAdmin) {
+void handleOption(const char* option, short& role) {
   if(option == nullptr) return;
-  short role = isAdmin;
   
   if(areEqualStr(option, "Add a movie")) {
     addMovie();
   } else if(areEqualStr(option, "Search for a movie")) {
     searchMovie();
   } else if(areEqualStr(option, "View all movies")) {
-    viewMovies();
+    readFromFile(DATABASE, &printAllMovies);
   } else if(areEqualStr(option, "Edit a movie")) {
     editMovie();
   } else if(areEqualStr(option, "Delete a movie")) {
@@ -26,14 +25,14 @@ void handleOption(const char* option, bool& isAdmin) {
   } else if(areEqualStr(option, "Rate a movie")) {
     rateMovie();
   } else if(areEqualStr(option, "Filter movies by rating")) {
-    filterByRating();
+    readFromFile(DATABASE, &printFilteredMovies);
   } else if(areEqualStr(option, "Log out")) {
     signIn(role);
     showMenu(role);
   } else {
     std::cout << "Invalid option" << std::endl;
   }
-  if(role != 2) showMenu(isAdmin);
+  showMenu(role);
 }
 
 const char* getMenuArray(bool isAdmin, int index) {
@@ -41,7 +40,7 @@ const char* getMenuArray(bool isAdmin, int index) {
 }
 
 void showMenu(short role) {
-  if(role == 2) return;
+  if(role > 1) return;
   const unsigned length = (role ? ADMIN_OPTIONS_LENGTH : USER_OPTIONS_LENGTH);
   unsigned choice;
   for(int i = 0;i < length;i++) {
@@ -49,10 +48,13 @@ void showMenu(short role) {
   }
   do {
     std::cin >> choice;
+    if(!isNumber(choice)) {
+      continue;
+    }
   } while(choice > length || choice < 1);
+  
   const char* option = getMenuArray(role, choice - 1);
-  bool isAdmin = role;
-  handleOption(option, isAdmin);
+  handleOption(option, role);
 }
 
 
@@ -63,4 +65,7 @@ void signIn(short& role) {
   std::cout << "3. Exit" << std::endl;
   char options[] = {'1', '2', '3'};
   role = chooseOption(options) - 1; //0 - user, 1 - admin
+  if(role == 2) {
+    exit(0);
+  }
 }

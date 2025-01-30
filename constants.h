@@ -4,9 +4,10 @@
 constexpr unsigned MAXIMUM_RATING = 10;
 
 //files
-constexpr char DATABASE[] = "C:\\Users\\hrist\\OneDrive\\Documents\\Maxim programming 6\\imdb\\database.txt";
+constexpr char DATABASE[] = "database.txt";
+constexpr char TEMP_FILE[] = "temp.txt";
 constexpr char SEPARATING_CHAR = '|';
-constexpr unsigned LINE_MAX_CHARACTERS = 100;
+constexpr unsigned LINE_MAX_CHARACTERS = 1000;
 
 //menu
 constexpr unsigned MENU_MAX_CHARACTERS = 50; //max characters for each menu option
