@@ -1,3 +1,15 @@
+/**
+* Solution to course project #6
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2024/2025
+* 
+* @author Maksim Hristov
+* @idnumber 4MI0600466 @compiler GCC 
+* 
+* <constants used in the program>
+*/
+
 #pragma once
 
 // movies

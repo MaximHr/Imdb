@@ -1,3 +1,15 @@
+/**
+* Solution to course project #6
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2024/2025
+* 
+* @author Maksim Hristov
+* @idnumber 4MI0600466 @compiler GCC 
+* 
+* <movie logic>
+*/
+
 #include <iostream>
 #include <fstream>
 #include "movies.h"
@@ -124,35 +136,77 @@ void searchMovie() {
   }
 }
 
-void deleteMovie(){
-  readFromFile(DATABASE, &getLineByTitleAndDelete);
+void changeFiles() {
   if(fileExists(TEMP_FILE)) {
     remove(DATABASE);
     rename(TEMP_FILE, DATABASE);
   }
 }
-void editMovie(){
-  readFromFile(DATABASE, &getLineByTitleAndEdit);
-  if(fileExists(TEMP_FILE)) {
-    remove(DATABASE);
-    rename(TEMP_FILE, DATABASE);
+
+void sortByRating(std::ifstream &file, char* line) {
+  char** lines = new char*[LINE_MAX_CHARACTERS];
+  unsigned count = 0;
+  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+    lines[count] = new char[LINE_MAX_CHARACTERS];
+    copyStr(lines[count], line);
+    count++;
   }
-}
-void rateMovie(){
-  readFromFile(DATABASE, &getLineByTitleAndRate);
-  if(fileExists(TEMP_FILE)) {
-    remove(DATABASE);
-    rename(TEMP_FILE, DATABASE);
+  for(int i = 0; i < count; i++) {
+    for(int j = i + 1; j < count; j++) {
+      const char* rating1 = findMovieDetail(lines[i], SEPARATING_CHAR, 3);
+      const char* rating2 = findMovieDetail(lines[j], SEPARATING_CHAR, 3);
+      if(rating1 != nullptr && rating2 != nullptr && getFloatNumber(rating1) < getFloatNumber(rating2)) {
+        char* temp = lines[i];
+        lines[i] = lines[j];
+        lines[j] = temp;
+      }
+      delete[] rating1;
+      delete[] rating2;
+    }
   }
+  for(unsigned i = 0; i < count; i++) {
+    std::cout << lines[i] << std::endl;
+    delete[] lines[i];
+  }
+  delete[] lines;
 }
+
+void sortByTitle(std::ifstream &file, char* line) {
+  char** lines = new char*[LINE_MAX_CHARACTERS];
+  unsigned count = 0;
+  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+    lines[count] = new char[LINE_MAX_CHARACTERS];
+    copyStr(lines[count], line);
+    count++;
+  }
+  for(int i = 0; i < count; i++) {
+    for(int j = i + 1; j < count; j++) {
+      const char* title1 = findMovieDetail(lines[i], SEPARATING_CHAR, 0);
+      const char* title2 = findMovieDetail(lines[j], SEPARATING_CHAR, 0);
+      if(title1 != nullptr && title2 != nullptr && strCompare(title1, title2) > 0) {
+        char* temp = lines[i];
+        lines[i] = lines[j];
+        lines[j] = temp;
+      }
+      delete[] title1;
+      delete[] title2;
+    }
+  }
+  for(unsigned i = 0; i < count; i++) {
+    std::cout << lines[i] << std::endl;
+    delete[] lines[i];
+  }
+  delete[] lines;
+}
+
 void sortMovie() {
   std::cout << "Type 1 to sort movies by title" << '\n';
   std::cout << "Type 2 to sort movies by rating" << '\n';
   int choice = chooseOption("12"); // same as { '1', '2' }
   if(choice == 1) {
-    //sort by title
+    readFromFile(DATABASE, sortByTitle);
   } else {
-    //sort by rating
+    readFromFile(DATABASE, sortByRating);
   }
 }
 
@@ -168,15 +222,14 @@ void getLineByTitleAndRate(std::ifstream &file, char* line) {
       const char* cast = findMovieDetail(line, SEPARATING_CHAR, 4);
       const char* oldRating = findMovieDetail(line, SEPARATING_CHAR, 3);
       float oldRatingNumber = roundNumber(getFloatNumber(oldRating));
-      
       const char* updatedRating = nullptr;
       float updatedRatingNumber = 0;
+      
       setRating(updatedRating, updatedRatingNumber);
       delete[] updatedRating;
       updatedRatingNumber = (oldRatingNumber + updatedRatingNumber) / 2; //average rating
       updatedRatingNumber = roundNumber(updatedRatingNumber);
       updatedRating = floatToString(updatedRatingNumber);
-      std::cout << updatedRating << '\n';
       char* newLine = createLine(movieTitle, genre, releaseDate, updatedRating, cast);
       editLineInFile(DATABASE, line, newLine);
 
@@ -216,42 +269,39 @@ void printFilteredMovies(std::ifstream &file , char* line) {
 //finds string between the n-th separating symbol and n-th + 1 separating symbol
 char* findMovieDetail(const char* str, char symbol, int n) {
   if (str == nullptr) return nullptr;
-
   int count = 0;
   const char* start = nullptr;
 
   // Find the nth separator
-  if (n == 0) {
+  if(n == 0) {
     start = str;
   } else {
-    while (*str != '\0') {
-      if (*str == symbol) {
+    while(*str != '\0') {
+      if(*str == symbol) {
         count++;
-        if (count == n) {
-          start = str + 1; // Move to the character after the nth separator
+        if(count == n) {
+          start = str + 1;
           break;
         }
       }
       str++;
     }
   }
-
-  // If nth separator is not found, return nullptr
+  // If nth separator is not found
   if (start == nullptr || *start == '\0') return nullptr;
 
   // Find the length of the substring until the next separator or end of string
   const char* end = start;
-  while (*end != symbol && *end != '\0') {
+  while(*end != symbol && *end != '\0') {
     end++;
   }
 
-  // Allocate memory for the substring and copy it
-  size_t length = end - start;
+  unsigned length = end - start;
   char* result = new char[length + 1]; // +1 for the null terminator
-  for (size_t i = 0; i < length; i++) {
+  for(int i = 0; i < length; i++) {
     result[i] = start[i];
   }
-  result[length] = '\0'; // Null-terminate the string
+  result[length] = '\0';
 
   return result;
 }

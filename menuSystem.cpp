@@ -1,3 +1,15 @@
+/**
+* Solution to course project #6
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2024/2025
+* 
+* @author Maksim Hristov
+* @idnumber 4MI0600466 @compiler GCC 
+* 
+* <menu logic>
+*/
+
 #include <iostream>
 #include "menuSystem.h"
 #include "constants.h"
@@ -17,13 +29,16 @@ void handleOption(const char* option, short& role) {
   } else if(areEqualStr(option, "View all movies")) {
     readFromFile(DATABASE, &printAllMovies);
   } else if(areEqualStr(option, "Edit a movie")) {
-    editMovie();
+    readFromFile(DATABASE, &getLineByTitleAndEdit);
+    changeFiles();
   } else if(areEqualStr(option, "Delete a movie")) {
-    deleteMovie();
+    readFromFile(DATABASE, &getLineByTitleAndDelete);
+    changeFiles();
   } else if(areEqualStr(option, "Sort movies")) {
     sortMovie();
   } else if(areEqualStr(option, "Rate a movie")) {
-    rateMovie();
+    readFromFile(DATABASE, &getLineByTitleAndRate);
+    changeFiles();
   } else if(areEqualStr(option, "Filter movies by rating")) {
     readFromFile(DATABASE, &printFilteredMovies);
   } else if(areEqualStr(option, "Log out")) {

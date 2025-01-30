@@ -1,21 +1,35 @@
-#include <limits>
+/**
+* Solution to course project #6
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2024/2025
+* 
+* @author Maksim Hristov
+* @idnumber 4MI0600466 @compiler GCC 
+* 
+* <file with helper functions>
+*/
+
 #include <iostream>
 #include "helperFunctions.h"
 
 float roundNumber(float num){
   return (int)(num * 100 + 0.5) / 100.0;
 }
+
 void clearInputBuffer() {
 	std::cin.clear();
 	std::cin.sync();
 	std::cin.ignore();	
 }
+
 char toLower(char letter) {
   if(letter >= 'A' && letter <= 'Z') {
     return letter + ('a' - 'A');
   }
   return letter;
 }
+
 bool isPrefix(const char* text, const char* expectedPrefix) {
 	if(!text || !expectedPrefix) return false;
 
@@ -29,6 +43,7 @@ bool isPrefix(const char* text, const char* expectedPrefix) {
 
 	return true;
 }
+
 bool isCaseSensitivePrefix(const char* text, const char* expectedPrefix) {
   if(!text || !expectedPrefix) return false;
   const short dif = 'a' - 'A';
@@ -73,7 +88,10 @@ int toNumber(char letter) {
   } 
   return -1;
 }
-bool isNumber(char letter) { return (letter >= '0' && letter <= '9'); }
+
+bool isNumber(char letter) { 
+  return (letter >= '0' && letter <= '9'); 
+}
 
 int pow(int base, int power) {
   int result = base;  
@@ -82,6 +100,7 @@ int pow(int base, int power) {
   }
   return result;
 }
+
 const char* floatToString(float num) {
   char* result = new char[5]; //max 3 digits + '.' + '\0'
   int intPart = (int)num;
@@ -141,16 +160,19 @@ unsigned getNumber(const char* str) {
   }
   return result;
 }
-// unsigned numLength(unsigned short num) {
-//   if(num == 0) return 1;
 
-//   unsigned result = 0;
-//   while(num > 0) {
-//     num /= 10;
-//     result++;
-//   }
-//   return result;
-// }
+int strCompare(const char* str1, const char* str2) {
+  if(str1 == nullptr || str2 == nullptr) return 0;
+  while(*str1 != '\0' && *str2 != '\0') {
+    if(*str1 != *str2) {
+      return *str1 - *str2;
+    }
+    str1++;
+    str2++;
+  }
+  return *str1 - *str2;
+}
+
 unsigned strLength(const char* str) {
   if(!str) return 0;
 
@@ -160,6 +182,7 @@ unsigned strLength(const char* str) {
   }
   return length; 
 }
+
 void copyStr(char* dest, const char* src) {
   if(!src || !dest) return;
   while(*src != '\0') {
@@ -181,6 +204,7 @@ bool areEqualStr(const char* str1, const char* str2) {
   }
   return (*str1 == '\0' && *str2 == '\0');
 }
+
 char* strConcat(char* dest, const char* src) {
   if(!dest || !src) return dest;
 
@@ -197,6 +221,7 @@ char* strConcat(char* dest, const char* src) {
   
   return dest;
 }
+
 char* strConcat(char* dest, char src) {
   if(!dest) return dest; 
 
@@ -210,6 +235,7 @@ char* strConcat(char* dest, char src) {
 
   return dest;
 }
+
 int chooseOption(const char* arr) {
   if(!arr) return -1;
   char userInput[2]; //If it is a single char (not an array of 1 char) it will cause bugs.

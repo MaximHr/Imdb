@@ -1,17 +1,31 @@
+/**
+* Solution to course project #6
+* Introduction to programming course
+* Faculty of Mathematics and Informatics of Sofia University
+* Winter semester 2024/2025
+* 
+* @author Maksim Hristov
+* @idnumber 4MI0600466 @compiler GCC 
+* 
+* <files logic>
+*/
+
 #include <iostream>
 #include <fstream>
 #include "filesHelper.h"
 #include "helperFunctions.h"
 #include "constants.h"
 
-bool fileExists(const std::string& filename) {
-    std::ifstream file(filename);
-    if (file.good()) {
-        file.close();
-        return true;
-    }
-    return false;
+bool fileExists(const char* filename) {
+  if(filename == nullptr) return false;
+  std::ifstream file(filename);
+  if(file.good()) {
+    file.close();
+    return true;
+  }
+  return false;
 }
+
 void addNewLineToFile(const char* filename, const char* content) {
   if(filename == nullptr || content == nullptr) return;
 
@@ -36,7 +50,6 @@ void readFromFile(const char* filename, void (*queryDatabase)(std::ifstream& fil
   }
   file.close();
 }
-
 
 void editLineInFile(const char* filename, const char* lineToEdit, const char* newLine) {
   if(filename == nullptr || lineToEdit == nullptr || newLine == nullptr) return;
