@@ -29,16 +29,17 @@ char* getStrInput(const char* printText) {
   char temp[LINE_MAX_CHARACTERS];
   unsigned length = 0;
   bool hasSeparator = false;
+	
   do {
-    if(printText != nullptr) {
+    if (printText != nullptr) {
       std::cout <<  printText;
     }
-    std::cin.getline(temp, LINE_MAX_CHARACTERS);
+    std::cin.getline(temp, INPUT_MAX_CHARS);
     length = strLength(temp) + 1;
     hasSeparator = strContains(temp, SEPARATING_CHAR);
-    if(hasSeparator) std::cout << "Input can not contain character " << SEPARATING_CHAR << '\n';
+    if (hasSeparator) std::cout << "Input can not contain character " << SEPARATING_CHAR << '\n';
 
-  } while(length <= 1 || length > LINE_MAX_CHARACTERS || hasSeparator);
+  } while (length <= 1 || length > INPUT_MAX_CHARS || hasSeparator);
   char* string = new char[length];
   copyStr(string, temp);
 
@@ -46,14 +47,14 @@ char* getStrInput(const char* printText) {
 }
 
 char* createLine(const char* title, const char* genre, const char* releaseDate, const char* rating, const char* cast){
-  if(title == nullptr || genre == nullptr || cast == nullptr || rating == nullptr || releaseDate == nullptr) return nullptr;
+  if (title == nullptr || genre == nullptr || cast == nullptr || rating == nullptr || releaseDate == nullptr) return nullptr;
   const unsigned titleLength = strLength(title);
   const unsigned genreLength = strLength(genre);
   const unsigned releaseDateLength = strLength(releaseDate);
   const unsigned castLength = strLength(cast);
   const unsigned ratingLength = strLength(rating);
 
-  // 4 допълнителна места за SEPARATING_CHAR-oвете и 1 за терминиращата нула. общо 5
+  // 4 additional spaces for SEPARATING_CHARs and 1 for the terminating null byte, total of 5
   const unsigned totalLength = ratingLength + titleLength + genreLength + castLength + releaseDateLength + 5;
   char* result = new char[totalLength];
 
@@ -75,25 +76,25 @@ char* getReleaseDate() {
   char* releaseDate = nullptr;
   unsigned short releaseDateNumber = 0;
   do {
-    if(releaseDate != nullptr) {
+    if (releaseDate != nullptr) {
       delete[] releaseDate;
     }
 
     releaseDate = getStrInput("Release Date: ");
     releaseDateNumber = getNumber(releaseDate);
-  } while(releaseDateNumber < 1800 || releaseDateNumber > 9999);
+  } while (releaseDateNumber < 1800 || releaseDateNumber > 9999);
 
   return releaseDate;
 }
 
 void setRating(const char* rating, float& ratingNumber) {
   do {
-    if(rating != nullptr) {
+    if (rating != nullptr) {
       delete[] rating;
     }
     rating = getStrInput("Enter rating: ");
     ratingNumber = roundNumber(getFloatNumber(rating));
-  } while(!isBetween(ratingNumber, 0, MAXIMUM_RATING));
+  } while (!isBetween(ratingNumber, 0, MAXIMUM_RATING));
 }
 
 void addMovie() {
@@ -102,9 +103,9 @@ void addMovie() {
   const char* genre = getStrInput("Genre: ");
   const char* releaseDate = getReleaseDate();
   const char* cast = getStrInput("Cast and crew: ");
-  char* line = createLine(title, genre, releaseDate, "5.0", cast);
+  const char* line = createLine(title, genre, releaseDate, "5.0", cast);
 
-  if(line != nullptr) {
+  if (line != nullptr) {
     addNewLineToFile(DATABASE, line);
     std::cout << "Movie added succesfully" << '\n';
   } else {
@@ -123,7 +124,7 @@ void searchMovie() {
   std::cout << "Type 3 to search by any criteria" << '\n';
   int choice = chooseOption("123"); // same as { '1', '2', '3' }
 
-  switch(choice) {
+  switch (choice) {
     case 1:
       readFromFile(DATABASE, searchByGenre);
       break;
@@ -136,26 +137,19 @@ void searchMovie() {
   }
 }
 
-void changeFiles() {
-  if(fileExists(TEMP_FILE)) {
-    remove(DATABASE);
-    rename(TEMP_FILE, DATABASE);
-  }
-}
-
 void sortByRating(std::ifstream &file, char* line) {
   char** lines = new char*[LINE_MAX_CHARACTERS];
   unsigned count = 0;
-  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+  while (file.getline(line, LINE_MAX_CHARACTERS)) {
     lines[count] = new char[LINE_MAX_CHARACTERS];
     copyStr(lines[count], line);
     count++;
   }
-  for(int i = 0; i < count; i++) {
-    for(int j = i + 1; j < count; j++) {
+  for (int i = 0; i < count; i++) {
+    for (int j = i + 1; j < count; j++) {
       const char* rating1 = findMovieDetail(lines[i], SEPARATING_CHAR, 3);
       const char* rating2 = findMovieDetail(lines[j], SEPARATING_CHAR, 3);
-      if(rating1 != nullptr && rating2 != nullptr && getFloatNumber(rating1) < getFloatNumber(rating2)) {
+      if (rating1 != nullptr && rating2 != nullptr && getFloatNumber(rating1) < getFloatNumber(rating2)) {
         char* temp = lines[i];
         lines[i] = lines[j];
         lines[j] = temp;
@@ -164,7 +158,7 @@ void sortByRating(std::ifstream &file, char* line) {
       delete[] rating2;
     }
   }
-  for(unsigned i = 0; i < count; i++) {
+  for (unsigned i = 0; i < count; i++) {
     std::cout << lines[i] << std::endl;
     delete[] lines[i];
   }
@@ -174,16 +168,16 @@ void sortByRating(std::ifstream &file, char* line) {
 void sortByTitle(std::ifstream &file, char* line) {
   char** lines = new char*[LINE_MAX_CHARACTERS];
   unsigned count = 0;
-  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+  while (file.getline(line, LINE_MAX_CHARACTERS)) {
     lines[count] = new char[LINE_MAX_CHARACTERS];
     copyStr(lines[count], line);
     count++;
   }
-  for(int i = 0; i < count; i++) {
-    for(int j = i + 1; j < count; j++) {
+  for (int i = 0; i < count; i++) {
+    for (int j = i + 1; j < count; j++) {
       const char* title1 = findMovieDetail(lines[i], SEPARATING_CHAR, 0);
       const char* title2 = findMovieDetail(lines[j], SEPARATING_CHAR, 0);
-      if(title1 != nullptr && title2 != nullptr && strCompare(title1, title2) > 0) {
+      if (title1 != nullptr && title2 != nullptr && strCompare(title1, title2) > 0) {
         char* temp = lines[i];
         lines[i] = lines[j];
         lines[j] = temp;
@@ -192,7 +186,7 @@ void sortByTitle(std::ifstream &file, char* line) {
       delete[] title2;
     }
   }
-  for(unsigned i = 0; i < count; i++) {
+  for (int i = 0; i < count; i++) {
     std::cout << lines[i] << std::endl;
     delete[] lines[i];
   }
@@ -203,7 +197,7 @@ void sortMovie() {
   std::cout << "Type 1 to sort movies by title" << '\n';
   std::cout << "Type 2 to sort movies by rating" << '\n';
   int choice = chooseOption("12"); // same as { '1', '2' }
-  if(choice == 1) {
+  if (choice == 1) {
     readFromFile(DATABASE, sortByTitle);
   } else {
     readFromFile(DATABASE, sortByRating);
@@ -214,9 +208,9 @@ void getLineByTitleAndRate(std::ifstream &file, char* line) {
   clearInputBuffer();
   const char* title = getStrInput("Enter title: ");
   
-  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+  while (file.getline(line, LINE_MAX_CHARACTERS)) {
     const char* movieTitle = findMovieDetail(line, SEPARATING_CHAR, 0);
-    if(movieTitle != nullptr && areEqualStr(movieTitle, title)) {
+    if (movieTitle != nullptr && areEqualStr(movieTitle, title)) {
       const char* genre = findMovieDetail(line, SEPARATING_CHAR, 1);
       const char* releaseDate = findMovieDetail(line, SEPARATING_CHAR,2);
       const char* cast = findMovieDetail(line, SEPARATING_CHAR, 4);
@@ -254,10 +248,10 @@ void printFilteredMovies(std::ifstream &file , char* line) {
   setRating(rating, ratingNumber);
   
   std::cout << "Movies with rating greater or equal to " << ratingNumber << '\n'; 
-  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+  while (file.getline(line, LINE_MAX_CHARACTERS)) {
     const char* movieRating = findMovieDetail(line, SEPARATING_CHAR, 3);
     float movieRatingNumber = roundNumber(getFloatNumber(movieRating));
-    if(movieRatingNumber >= ratingNumber) {
+    if (movieRatingNumber >= ratingNumber) {
       std::cout << line << std::endl;
     }
     delete[] movieRating;
@@ -273,13 +267,13 @@ char* findMovieDetail(const char* str, char symbol, int n) {
   const char* start = nullptr;
 
   // Find the nth separator
-  if(n == 0) {
+  if (n == 0) {
     start = str;
   } else {
-    while(*str != '\0') {
-      if(*str == symbol) {
+    while (*str != '\0') {
+      if (*str == symbol) {
         count++;
-        if(count == n) {
+        if (count == n) {
           start = str + 1;
           break;
         }
@@ -292,13 +286,13 @@ char* findMovieDetail(const char* str, char symbol, int n) {
 
   // Find the length of the substring until the next separator or end of string
   const char* end = start;
-  while(*end != symbol && *end != '\0') {
+  while (*end != symbol && *end != '\0') {
     end++;
   }
 
   unsigned length = end - start;
   char* result = new char[length + 1]; // +1 for the null terminator
-  for(int i = 0; i < length; i++) {
+  for (int i = 0; i < length; i++) {
     result[i] = start[i];
   }
   result[length] = '\0';
@@ -310,8 +304,8 @@ char* findMovieDetail(const char* str, char symbol, int n) {
 void searchByAnyCriteria(std::ifstream &file , char* line) {
   clearInputBuffer();
   const char* criteria = getStrInput("Enter criteria: ");
-  while(file.getline(line, LINE_MAX_CHARACTERS)) {
-    if(strContains(line, criteria, false)) {
+  while (file.getline(line, LINE_MAX_CHARACTERS)) {
+    if (strContains(line, criteria, false)) {
       std::cout << line << std::endl;
     }
   }
@@ -321,10 +315,10 @@ void searchByAnyCriteria(std::ifstream &file , char* line) {
 void searchByTitle(std::ifstream &file , char* line) {
   clearInputBuffer();
   const char* title = getStrInput("Enter title: ");
-  
-  while(file.getline(line, LINE_MAX_CHARACTERS)) {
-    const char* movieTitle = findMovieDetail(line, SEPARATING_CHAR, 0);
-    if(movieTitle != nullptr && strContains(movieTitle, title, false)) {
+
+  while (file.getline(line, LINE_MAX_CHARACTERS)) {
+  	const char* movieTitle = findMovieDetail(line, SEPARATING_CHAR, 0);
+  	if (movieTitle != nullptr && strContains(movieTitle, title, false)) {
       std::cout << line << std::endl;
     }
     delete[] movieTitle;
@@ -335,9 +329,9 @@ void searchByTitle(std::ifstream &file , char* line) {
 void getLineByTitleAndDelete(std::ifstream &file , char* line) {
   clearInputBuffer();
   char* title = getStrInput("Enter title: ");
-  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+  while (file.getline(line, LINE_MAX_CHARACTERS)) {
     const char* movieTitle = findMovieDetail(line, SEPARATING_CHAR, 0);
-    if(movieTitle != nullptr && areEqualStr(movieTitle, title)) {
+    if (movieTitle != nullptr && areEqualStr(movieTitle, title)) {
       std::cout << "Movie Deleted" << std::endl;
       deleteLineFromFile(DATABASE, line);
     }
@@ -350,9 +344,9 @@ void getLineByTitleAndEdit(std::ifstream &file , char* line) {
   clearInputBuffer();
   const char* title = getStrInput("Enter title: ");
   
-  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+  while (file.getline(line, LINE_MAX_CHARACTERS)) {
     const char* movieTitle = findMovieDetail(line, SEPARATING_CHAR, 0);
-    if(movieTitle != nullptr && areEqualStr(movieTitle, title)) {
+    if (movieTitle != nullptr && areEqualStr(movieTitle, title)) {
       std::cout << line << std::endl;
       const char* title = getStrInput("New title: ");
       const char* genre = getStrInput("New genre: ");
@@ -377,9 +371,9 @@ void getLineByTitleAndEdit(std::ifstream &file , char* line) {
 void searchByGenre(std::ifstream &file , char* line) {
   clearInputBuffer();
   const char* genre = getStrInput("Enter genre: ");
-  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+  while (file.getline(line, LINE_MAX_CHARACTERS)) {
     const char* movieGenre = findMovieDetail(line, SEPARATING_CHAR, 1);
-    if(movieGenre != nullptr && areEqualStr(movieGenre, genre)) {
+    if (movieGenre != nullptr && areEqualStr(movieGenre, genre)) {
       std::cout << line << std::endl;
     }
     delete[] movieGenre;
@@ -389,7 +383,7 @@ void searchByGenre(std::ifstream &file , char* line) {
 
 void printAllMovies(std::ifstream &file , char* line) {
   std::cout << "List of movies: " << std::endl;
-  while(file.getline(line, LINE_MAX_CHARACTERS)) {
+  while (file.getline(line, LINE_MAX_CHARACTERS)) {
     std::cout << line << std::endl;
   }
 }

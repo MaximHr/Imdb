@@ -19,7 +19,10 @@ constexpr unsigned MAXIMUM_RATING = 10;
 constexpr char DATABASE[] = "database.txt";
 constexpr char TEMP_FILE[] = "temp.txt";
 constexpr char SEPARATING_CHAR = '|';
+constexpr unsigned MAX_ROWS = 1000;
 constexpr unsigned LINE_MAX_CHARACTERS = 1000;
+//there are three string fields - title,genre,cast and a total of 10 chars for (rating and year)
+constexpr unsigned INPUT_MAX_CHARS = LINE_MAX_CHARACTERS / 3 - 10;
 
 //menu
 constexpr unsigned MENU_MAX_CHARACTERS = 50; //max characters for each menu option
